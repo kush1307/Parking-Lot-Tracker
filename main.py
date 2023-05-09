@@ -38,6 +38,10 @@ class ParkingLotTracker:
         return self.data.get("vehicle_spot").get(vehicle_num, "No vehicle parked with this number.")
 
     def print_parking(self):
+        """
+        Function to print parking level stats.
+        """
+
         for level in self.data.get("parking_data"):
             print(level)
 
