@@ -1,4 +1,11 @@
+import constants
+
+
 class ParkingLotTracker:
+    """
+    ParkingLotTracker application that assigns parking spot to incoming vehicle and
+    retrieves level and spot number based on vehicle number.
+    """
 
     def __init__(self, data={}):
         self.data = data
@@ -10,14 +17,14 @@ class ParkingLotTracker:
         """
 
         if self.data.get("available_spot")[0] > self.data.get("levels") - 1:
-            return "Parking is FULL."
+            return constants.PARKING_FULL
 
-        if self.data.get("vehicle_spot").get(vehicle_num):
-            return "Vehicle with this number already parked in the parking."
+        if self.data.get("vehicle_spot").get(vehicle_num.strip().lower()):
+            return constants.ALREADY_EXISTS
 
         self.data.get("parking_data")[self.data.get("available_spot")[0]][
-            self.data.get("available_spot")[1]] = vehicle_num
-        self.data.get("vehicle_spot")[vehicle_num] = {"level": self.data.get(
+            self.data.get("available_spot")[1]] = vehicle_num.strip().lower()
+        self.data.get("vehicle_spot")[vehicle_num.strip().lower()] = {"level": self.data.get(
             "parking_level_names")[self.data.get("available_spot")[0]], "spot": self.spot_n}
         self.spot_n += 1
 
@@ -28,14 +35,14 @@ class ParkingLotTracker:
             self.data["available_spot"][0] += 1
             self.data["available_spot"][1] = 0
 
-        return "Added!"
+        return constants.SUCCESS
 
     def get_vehicle_parking_spot_number(self, vehicle_num):
         """
         Function to get vehicle level and spot number.
         """
 
-        return self.data.get("vehicle_spot").get(vehicle_num, "No vehicle parked with this number.")
+        return self.data.get("vehicle_spot").get(vehicle_num, constants.NO_VEHICLE)
 
     def print_parking(self):
         """
@@ -45,38 +52,41 @@ class ParkingLotTracker:
         for level in self.data.get("parking_data"):
             print(level)
 
+
+n = 20 # Number of parking spots on each level.
 data = {
     "levels": 2,
-    "size": 3,
-    "parking_data": [[""] * 3, [""] * 3],
+    "size": n,
+    "parking_data": [[""] * n, [""] * n],
     "parking_level_names": {0: "A", 1: "B"},
-    "parking_level_size": {},
     "available_spot": [0, 0],
-    "emptied_spot": [],
     "vehicle_spot": {}
 }
 
 park = ParkingLotTracker(data=data)
 
 while True:
-    park_choice = int(input(
-        "1. Please Assign me a parking slot.\n2. Please tell me where my vehicle is located.\n3. Show Parking\n4. Exit\n\n=> "))
+    try:
+        park_choice = int(input(constants.PARK_CHOICE))
+    except ValueError as e:
+        print(constants.INVALID_INPUT)
+        continue
 
     if park_choice == 1:
-        vehicle_num = input("Enter your vehicle number: ")
+        vehicle_num = input(constants.VEHICLE_NUM_INPUT)
         print(park.assign_parking_spot(vehicle_num=vehicle_num))
 
     elif park_choice == 2:
-        vehicle_num = input("Enter your vehicle number: ")
+        vehicle_num = input(constants.VEHICLE_NUM_INPUT)
         print(park.get_vehicle_parking_spot_number(vehicle_num=vehicle_num))
 
     elif park_choice == 3:
         park.print_parking()
 
     elif park_choice == 4:
-        print("Exit")
+        print(constants.EXIT)
         break
 
     else:
-        print("Please enter a valid choice.")
+        print(constants.INVALID_CHOICE)
     print("\n\n")
